@@ -8,6 +8,6 @@ export interface blogCard{
 export interface fullBlog{
     currentSlug: string;
     title: string,
-    content: string,
+    content: any,
     titleImage: any
 }

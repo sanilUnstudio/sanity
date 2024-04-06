@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+
+export const revalidate = 30;
 async function getData() {
   const query = `
   *[_type == 'Unstudio-blog']{

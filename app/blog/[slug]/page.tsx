@@ -4,6 +4,8 @@ import { fullBlog } from "@/app/lib/interface";
 import Image from "next/image";
 import { PortableText } from "@portabletext/react";
 export const revalidate = 10;
+import { getImageDimensions } from '@sanity/asset-utils'
+import urlBuilder from '@sanity/image-url'
 
 async function getData(slug:string) {
     const query = `*[_type == 'Unstudio-blog' && slug.current =='${slug}']{
@@ -44,12 +46,7 @@ const SampleImageComponent = ({ value, isInline }) => {
     const { width, height } = getImageDimensions(value)
     return (
         <img
-            src={urlBuilder()
-                .image(value)
-                .width(isInline ? 100 : 800)
-                .fit('max')
-                .auto('format')
-                .url()}
+            src={urlFor(value).url()}
             alt={value.alt || ' '}
             loading="lazy"
             style={{

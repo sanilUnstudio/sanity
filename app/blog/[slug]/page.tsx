@@ -17,26 +17,57 @@ async function getData(slug:string) {
     return data;
 }
 
-const myPortableTextComponents = {
-    types: {
-        image: ({ value }) => <img src={value.imageUrl} />,
-        callToAction: ({ value, isInline }) =>
-            isInline ? (
-                <a href={value.url}>{value.text}</a>
-            ) : (
-                <div className="callToAction">{value.text}</div>
-            ),
-    },
+// const myPortableTextComponents = {
+//     types: {
+//         image: ({ value }) => <img src={value.imageUrl} />,
+//         callToAction: ({ value, isInline }) =>
+//             isInline ? (
+//                 <a href={value.url}>{value.text}</a>
+//             ) : (
+//                 <div className="callToAction">{value.text}</div>
+//             ),
+//     },
 
-    marks: {
-        link: ({ children, value }) => {
-            const rel = !value.href.startsWith('/') ? 'noreferrer noopener' : undefined
-            return (
-                <a href={value.href} rel={rel}>
-                    {children}
-                </a>
-            )
-        },
+//     marks: {
+//         link: ({ children, value }) => {
+//             const rel = !value.href.startsWith('/') ? 'noreferrer noopener' : undefined
+//             return (
+//                 <a href={value.href} rel={rel}>
+//                     {children}
+//                 </a>
+//             )
+//         },
+//     },
+// }
+
+const SampleImageComponent = ({ value, isInline }) => {
+    const { width, height } = getImageDimensions(value)
+    return (
+        <img
+            src={urlBuilder()
+                .image(value)
+                .width(isInline ? 100 : 800)
+                .fit('max')
+                .auto('format')
+                .url()}
+            alt={value.alt || ' '}
+            loading="lazy"
+            style={{
+                // Display alongside text if image appears inside a block text span
+                display: isInline ? 'inline-block' : 'block',
+
+                // Avoid jumping around with aspect-ratio CSS property
+                aspectRatio: width / height,
+            }}
+        />
+    )
+}
+
+const components = {
+    types: {
+        image: SampleImageComponent,
+        // Any other custom types you have in your content
+        // Examples: mapLocation, contactForm, code, featuredProjects, latestNews, etc.
     },
 }
 export default async function BlogArticle({ params }: { params: { slug: string } }) {
@@ -61,7 +92,7 @@ export default async function BlogArticle({ params }: { params: { slug: string }
             />
 
             <div className="mt-16 prose prose-blue prose-xl dark:prose-invert">
-                <PortableText value={data.content} components={myPortableTextComponents} />
+                <PortableText value={data.content} components={components} />
             </div>
        </div>
     )

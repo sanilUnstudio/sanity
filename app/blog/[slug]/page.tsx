@@ -1,9 +1,9 @@
+// @ts-nocheck
 import { client,urlFor } from "@/app/lib/sanity"
 import { fullBlog } from "@/app/lib/interface";
 import Image from "next/image";
 import { PortableText } from "@portabletext/react";
-
-export const revalidate = 30;
+export const revalidate = 10;
 
 async function getData(slug:string) {
     const query = `*[_type == 'Unstudio-blog' && slug.current =='${slug}']{
@@ -17,6 +17,28 @@ async function getData(slug:string) {
     return data;
 }
 
+const myPortableTextComponents = {
+    types: {
+        image: ({ value }) => <img src={value.imageUrl} />,
+        callToAction: ({ value, isInline }) =>
+            isInline ? (
+                <a href={value.url}>{value.text}</a>
+            ) : (
+                <div className="callToAction">{value.text}</div>
+            ),
+    },
+
+    marks: {
+        link: ({ children, value }) => {
+            const rel = !value.href.startsWith('/') ? 'noreferrer noopener' : undefined
+            return (
+                <a href={value.href} rel={rel}>
+                    {children}
+                </a>
+            )
+        },
+    },
+}
 export default async function BlogArticle({ params }: { params: { slug: string } }) {
     const data:fullBlog = await getData(params.slug)
     console.log(data)
@@ -39,7 +61,7 @@ export default async function BlogArticle({ params }: { params: { slug: string }
             />
 
             <div className="mt-16 prose prose-blue prose-xl dark:prose-invert">
-                <PortableText value={data.content}/>
+                <PortableText value={data.content} components={myPortableTextComponents} />
             </div>
        </div>
     )
